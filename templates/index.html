@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grant Writing Support Tool</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Form Styles */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 1.5em;
+            color: #6a11cb;
+        }
+
+        textarea, input[type="file"], button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #6a11cb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: #2575fc;
+        }
+
+        .response-box {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            color: #444;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Grant Writing Support Tool</h1>
+    <div class="container">
+        <!-- Section 1: Voice Note Transcription -->
+        <div class="section">
+            <h2>1. Voice Note Transcription</h2>
+            <form id="voice-form" enctype="multipart/form-data">
+                <input type="file" name="audio" accept="audio/*">
+                <button type="button" onclick="transcribeAudio()">Transcribe</button>
+            </form>
+            <div class="response-box" id="transcription"></div>
+        </div>
+
+        <!-- Section 2: AI-Powered Q&A Assistance -->
+        <div class="section">
+            <h2>2. AI-Powered Q&A Assistance</h2>
+            <textarea id="context" rows="5" placeholder="Paste your grant text here" style="width: 100%; font-size: 1em;"></textarea><br>
+            <textarea id="question" rows="3" placeholder="Ask a question" style="width: 100%; font-size: 1em; resize: none;"></textarea>
+            <button onclick="getAnswer()">Get Answer</button>
+            <div class="response-box" id="qna-response"></div>
+        </div>
+        
+
+        <!-- Section 3: Semantic Analysis -->
+        <div class="section">
+            <h2>3. Semantic Analysis</h2>
+            <textarea id="input-text" placeholder="Enter text for refinement"></textarea>
+            <button onclick="refineText()">Refine</button>
+            <div class="response-box" id="refined-text"></div>
+        </div>
+    </div>
+
+    <script>
+        // Voice Note Transcription
+        function transcribeAudio() {
+            const formData = new FormData(document.getElementById("voice-form"));
+            fetch("/transcribe", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("transcription").innerText = data.transcribed_text || "No transcription available.";
+            })
+            .catch(error => {
+                document.getElementById("transcription").innerText = "Error: Unable to transcribe audio.";
+                console.error(error);
+            });
+        }
+
+        // AI-Powered Q&A Assistance
+        function getAnswer() {
+            const context = document.getElementById("context").value;
+            const question = document.getElementById("question").value;
+
+            fetch("/qna", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ context: context, question: question })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("qna-response").innerText = data.answer || "No answer available.";
+            })
+            .catch(error => {
+                document.getElementById("qna-response").innerText = "Error: Unable to fetch answer.";
+                console.error(error);
+            });
+        }
+
+        // Semantic Analysis
+        function refineText() {
+            const inputText = document.getElementById("input-text").value;
+
+            fetch("/refine", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ input_text: inputText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("refined-text").innerText = data.refined_text || "No refinement available.";
+            })
+            .catch(error => {
+                document.getElementById("refined-text").innerText = "Error: Unable to refine text.";
+                console.error(error);
+            });
+        }
+    </script>
+</body>
+</html>

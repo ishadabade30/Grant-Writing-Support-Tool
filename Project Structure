@@ -1,0 +1,10 @@
+grant_tool_project/
+├── app.py                 # Main Flask backend
+├── voice_transcription.py # Voice note transcription logic
+├── gemini_qna.py          # Gemini API Q&A integration
+├── semantic_analysis.py   # Input refinement logic
+├── templates/
+│   └── index.html         # Frontend HTML
+├── static/
+│   └── style.css          # Optional CSS file
+└── requirements.txt       # List of dependencies
